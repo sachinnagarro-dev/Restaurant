@@ -48,28 +48,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Restore session on mount
   useEffect(() => {
-    const savedAdminKey = localStorage.getItem(ADMIN_KEY_STORAGE);
-    if (savedAdminKey) {
-      // Validate the saved key
-      apiService.validateAdminKey(savedAdminKey).then(isValid => {
-        if (isValid) {
-          dispatch({ type: 'RESTORE_SESSION', payload: savedAdminKey });
-        } else {
-          localStorage.removeItem(ADMIN_KEY_STORAGE);
-        }
-      });
+    const savedToken = localStorage.getItem('jwt_token');
+    if (savedToken) {
+      // Validate the saved token
+      apiService.setAuthToken(savedToken);
+      apiService.getCurrentUser()
+        .then(userInfo => {
+          dispatch({ type: 'RESTORE_SESSION', payload: savedToken });
+        })
+        .catch(() => {
+          localStorage.removeItem('jwt_token');
+          apiService.clearAuthToken();
+        });
     }
   }, []);
 
   const login = async (adminKey: string): Promise<boolean> => {
     try {
-      const isValid = await apiService.validateAdminKey(adminKey);
-      if (isValid) {
-        localStorage.setItem(ADMIN_KEY_STORAGE, adminKey);
-        dispatch({ type: 'LOGIN', payload: adminKey });
-        return true;
-      }
-      return false;
+      const response = await apiService.loginWithAdminKey(adminKey);
+      localStorage.setItem('jwt_token', response.token);
+      dispatch({ type: 'LOGIN', payload: response.token });
+      return true;
     } catch (error) {
       console.error('Login failed:', error);
       return false;
@@ -77,7 +76,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = () => {
-    localStorage.removeItem(ADMIN_KEY_STORAGE);
+    localStorage.removeItem('jwt_token');
+    apiService.clearAuthToken();
     dispatch({ type: 'LOGOUT' });
   };
 

@@ -17,4 +17,9 @@ RUN dotnet publish "TableOrder.Backend.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+# Create self-signed certificate for HTTPS in development
+RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+RUN openssl req -x509 -newkey rsa:4096 -keyout /app/key.pem -out /app/cert.pem -days 365 -nodes -subj "/C=US/ST=State/L=City/O=Organization/CN=localhost"
+
 ENTRYPOINT ["dotnet", "TableOrder.Backend.dll"]

@@ -130,3 +130,12 @@ C:\D\Projects\RestaurantApp\backend\src\TableOrder.Backend\obj\Debug\net8.0\refi
 C:\D\Projects\RestaurantApp\backend\src\TableOrder.Backend\obj\Debug\net8.0\TableOrder.Backend.pdb
 C:\D\Projects\RestaurantApp\backend\src\TableOrder.Backend\obj\Debug\net8.0\TableOrder.Backend.genruntimeconfig.cache
 C:\D\Projects\RestaurantApp\backend\src\TableOrder.Backend\obj\Debug\net8.0\ref\TableOrder.Backend.dll
+C:\D\Projects\RestaurantApp\backend\src\TableOrder.Backend\obj\Debug\net8.0\TableOrder.Backend.sourcelink.json
+C:\D\Projects\RestaurantApp\backend\src\TableOrder.Backend\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\D\Projects\RestaurantApp\backend\src\TableOrder.Backend\bin\Debug\net8.0\Microsoft.IdentityModel.Abstractions.dll
+C:\D\Projects\RestaurantApp\backend\src\TableOrder.Backend\bin\Debug\net8.0\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\D\Projects\RestaurantApp\backend\src\TableOrder.Backend\bin\Debug\net8.0\Microsoft.IdentityModel.Logging.dll
+C:\D\Projects\RestaurantApp\backend\src\TableOrder.Backend\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.dll
+C:\D\Projects\RestaurantApp\backend\src\TableOrder.Backend\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+C:\D\Projects\RestaurantApp\backend\src\TableOrder.Backend\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
+C:\D\Projects\RestaurantApp\backend\src\TableOrder.Backend\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll

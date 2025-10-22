@@ -11,6 +11,8 @@ public class MenuItemResponse
     public string? ImageUrl { get; set; }
     public bool IsVegetarian { get; set; }
     public int PreparationTimeMinutes { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
 }
 
 public class TableResponse

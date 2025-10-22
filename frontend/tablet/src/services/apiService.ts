@@ -49,7 +49,7 @@ class ApiService {
   // Order API methods
   async createOrder(order: CreateOrderRequest): Promise<OrderResponse> {
     try {
-      const response = await fetch(`${this.baseUrl}/orders`, {
+      const response = await fetch(`${this.baseUrl}/order`, { // Changed from /orders to /order
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ class ApiService {
 
   async getOrderById(id: number): Promise<OrderResponse | null> {
     try {
-      const response = await fetch(`${this.baseUrl}/orders/${id}`);
+      const response = await fetch(`${this.baseUrl}/order/${id}`); // Changed from /orders to /order
       if (response.status === 404) {
         return null;
       }
@@ -87,7 +87,7 @@ class ApiService {
 
   async updateOrderStatus(id: number, status: string): Promise<OrderResponse> {
     try {
-      const response = await fetch(`${this.baseUrl}/orders/${id}/status`, {
+      const response = await fetch(`${this.baseUrl}/order/${id}/status`, { // Changed from /orders to /order
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -2,11 +2,79 @@ import type { Order, OrderStatus } from '../types/order';
 
 class ApiService {
   private baseUrl: string = '/api';
+  private authToken: string | null = null;
+
+  // Set authentication token
+  setAuthToken(token: string): void {
+    this.authToken = token;
+  }
+
+  // Clear authentication token
+  clearAuthToken(): void {
+    this.authToken = null;
+  }
+
+  // Get headers with authentication
+  private getHeaders(): HeadersInit {
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    };
+    
+    if (this.authToken) {
+      headers['Authorization'] = `Bearer ${this.authToken}`;
+    }
+    
+    return headers;
+  }
+
+  // Auth methods for kitchen staff
+  async loginWithCredentials(username: string, password: string): Promise<{ token: string; role: string; expiresAt: string }> {
+    try {
+      const response = await fetch(`${this.baseUrl}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Invalid credentials');
+      }
+
+      const data = await response.json();
+      this.setAuthToken(data.token);
+      return data;
+    } catch (error) {
+      console.error('Failed to login with credentials:', error);
+      throw error;
+    }
+  }
+
+  async getCurrentUser(): Promise<{ username: string; role: string }> {
+    try {
+      const response = await fetch(`${this.baseUrl}/auth/me`, {
+        headers: this.getHeaders(),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get current user');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Failed to get current user:', error);
+      throw error;
+    }
+  }
 
   // Order API methods
   async getOrders(): Promise<Order[]> {
     try {
-      const response = await fetch(`${this.baseUrl}/order`);
+      const response = await fetch(`${this.baseUrl}/order`, {
+        headers: this.getHeaders(),
+      });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -26,7 +94,9 @@ class ApiService {
 
   async getOrderById(id: number): Promise<Order | null> {
     try {
-      const response = await fetch(`${this.baseUrl}/order/${id}`);
+      const response = await fetch(`${this.baseUrl}/order/${id}`, {
+        headers: this.getHeaders(),
+      });
       if (response.status === 404) {
         return null;
       }
@@ -44,9 +114,7 @@ class ApiService {
     try {
       const response = await fetch(`${this.baseUrl}/order/${id}/status`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: this.getHeaders(),
         body: JSON.stringify({ status }),
       });
 

@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
 import { useKitchen } from '../contexts/KitchenContext';
+import { useAuth } from '../contexts/AuthContext';
 import OrderCard from './OrderCard';
 import KitchenFilters from './KitchenFilters';
 import ConnectionStatus from './ConnectionStatus';
 
 const KitchenScreen: React.FC = () => {
   const { state, loadOrders, getFilteredOrders } = useKitchen();
+  const { logout, user } = useAuth();
 
   useEffect(() => {
     loadOrders();
@@ -53,6 +55,9 @@ const KitchenScreen: React.FC = () => {
               <p className="text-gray-600">Manage and track order status</p>
             </div>
             <div className="flex items-center gap-4">
+              <div className="text-sm text-gray-600">
+                Welcome, {user?.username} ({user?.role})
+              </div>
               <ConnectionStatus />
               <button
                 onClick={loadOrders}
@@ -60,6 +65,12 @@ const KitchenScreen: React.FC = () => {
                 disabled={state.isLoading}
               >
                 🔄 Refresh
+              </button>
+              <button
+                onClick={logout}
+                className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+              >
+                Logout
               </button>
             </div>
           </div>

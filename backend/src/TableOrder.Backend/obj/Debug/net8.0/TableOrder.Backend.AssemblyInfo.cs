@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TableOrder.Backend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5f26cac76c436de68b08fcba5ac518f42fae5de0")]
 [assembly: System.Reflection.AssemblyProductAttribute("TableOrder.Backend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TableOrder.Backend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
