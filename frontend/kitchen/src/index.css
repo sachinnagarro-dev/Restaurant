@@ -1,0 +1,95 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-kitchen-600 hover:bg-kitchen-700 text-white font-medium py-2 px-4 rounded-lg transition-colors;
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors;
+  }
+  
+  .btn-success {
+    @apply bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors;
+  }
+  
+  .btn-warning {
+    @apply bg-yellow-600 hover:bg-yellow-700 text-white font-medium py-2 px-4 rounded-lg transition-colors;
+  }
+  
+  .btn-danger {
+    @apply bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors;
+  }
+  
+  .card {
+    @apply bg-white rounded-lg shadow-sm border border-gray-200 p-4;
+  }
+  
+  .input {
+    @apply border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-kitchen-500 focus:border-transparent;
+  }
+  
+  .status-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .status-received {
+    @apply bg-yellow-100 text-yellow-800;
+  }
+  
+  .status-preparing {
+    @apply bg-blue-100 text-blue-800;
+  }
+  
+  .status-ready {
+    @apply bg-green-100 text-green-800;
+  }
+  
+  .status-served {
+    @apply bg-purple-100 text-purple-800;
+  }
+  
+  .status-closed {
+    @apply bg-gray-100 text-gray-800;
+  }
+}
+
+/* Print styles for kitchen tickets */
+@media print {
+  body {
+    @apply bg-white text-black;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+  
+  .kitchen-ticket {
+    @apply border border-black p-4 m-2;
+    page-break-inside: avoid;
+  }
+  
+  .kitchen-ticket h2 {
+    @apply text-lg font-bold border-b border-black pb-2 mb-4;
+  }
+  
+  .kitchen-ticket .order-info {
+    @apply mb-4;
+  }
+  
+  .kitchen-ticket .items-list {
+    @apply space-y-2;
+  }
+  
+  .kitchen-ticket .item {
+    @apply flex justify-between border-b border-gray-300 pb-1;
+  }
+}

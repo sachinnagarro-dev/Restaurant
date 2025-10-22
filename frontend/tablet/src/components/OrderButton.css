@@ -1,0 +1,187 @@
+.order-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  font-family: inherit;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.order-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+.order-button:hover:not(.order-button--disabled):not(.order-button--loading) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.order-button:active:not(.order-button--disabled):not(.order-button--loading) {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Variants */
+.order-button--primary {
+  background: #007bff;
+  color: white;
+}
+
+.order-button--primary:hover:not(.order-button--disabled):not(.order-button--loading) {
+  background: #0056b3;
+}
+
+.order-button--secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.order-button--secondary:hover:not(.order-button--disabled):not(.order-button--loading) {
+  background: #545b62;
+}
+
+.order-button--success {
+  background: #28a745;
+  color: white;
+}
+
+.order-button--success:hover:not(.order-button--disabled):not(.order-button--loading) {
+  background: #218838;
+}
+
+.order-button--danger {
+  background: #dc3545;
+  color: white;
+}
+
+.order-button--danger:hover:not(.order-button--disabled):not(.order-button--loading) {
+  background: #c82333;
+}
+
+/* Sizes */
+.order-button--small {
+  padding: 8px 16px;
+  font-size: 14px;
+  min-height: 36px;
+}
+
+.order-button--medium {
+  padding: 12px 24px;
+  font-size: 16px;
+  min-height: 44px;
+}
+
+.order-button--large {
+  padding: 16px 32px;
+  font-size: 18px;
+  min-height: 52px;
+}
+
+/* States */
+.order-button--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.order-button--loading {
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.order-button--loading .order-button__text {
+  opacity: 0.7;
+}
+
+.order-button--loading .order-button__icon {
+  opacity: 0;
+}
+
+/* Icon */
+.order-button__icon {
+  font-size: 1.2em;
+  transition: opacity 0.2s ease;
+}
+
+/* Spinner */
+.order-button__spinner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.order-button--primary .spinner {
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+}
+
+.order-button--secondary .spinner {
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+}
+
+.order-button--success .spinner {
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+}
+
+.order-button--danger .spinner {
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Text */
+.order-button__text {
+  transition: opacity 0.2s ease;
+}
+
+/* Full width variant */
+.order-button--full-width {
+  width: 100%;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .order-button--small {
+    padding: 6px 12px;
+    font-size: 13px;
+    min-height: 32px;
+  }
+  
+  .order-button--medium {
+    padding: 10px 20px;
+    font-size: 15px;
+    min-height: 40px;
+  }
+  
+  .order-button--large {
+    padding: 14px 28px;
+    font-size: 17px;
+    min-height: 48px;
+  }
+}

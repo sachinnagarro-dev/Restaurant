@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  tableorder-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=tableorder;Username=postgres;Password=password
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - tableorder-network
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=tableorder
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - tableorder-network
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - tableorder-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  tableorder-network:
+    driver: bridge
