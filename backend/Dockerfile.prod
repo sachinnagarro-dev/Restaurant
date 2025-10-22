@@ -1,0 +1,52 @@
+# Production Dockerfile for TableOrder Backend
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+WORKDIR /app
+EXPOSE 5000
+EXPOSE 5001
+
+# Install OpenSSL for certificate generation
+RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copy project file and restore dependencies
+COPY ["src/TableOrder.Backend/TableOrder.Backend.csproj", "src/TableOrder.Backend/"]
+RUN dotnet restore "src/TableOrder.Backend/TableOrder.Backend.csproj"
+
+# Copy source code
+COPY . .
+WORKDIR "/src/src/TableOrder.Backend"
+
+# Build the application
+RUN dotnet build "TableOrder.Backend.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "TableOrder.Backend.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+FROM base AS final
+WORKDIR /app
+
+# Copy published application
+COPY --from=publish /app/publish .
+
+# Create directory for certificates
+RUN mkdir -p /app/certs
+
+# Generate self-signed certificate for HTTPS (production should use real certificates)
+RUN openssl req -x509 -newkey rsa:4096 -keyout /app/certs/key.pem -out /app/certs/cert.pem -days 365 -nodes \
+    -subj "/C=US/ST=State/L=City/O=RestaurantApp/CN=localhost" \
+    -addext "subjectAltName=DNS:localhost,DNS:*.localhost,IP:127.0.0.1"
+
+# Set environment variables for production
+ENV ASPNETCORE_ENVIRONMENT=Production
+ENV ASPNETCORE_URLS="http://+:5000;https://+:5001"
+ENV ASPNETCORE_Kestrel__Certificates__Default__Path=/app/certs/cert.pem
+ENV ASPNETCORE_Kestrel__Certificates__Default__KeyPath=/app/certs/key.pem
+
+# Create non-root user for security
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+RUN chown -R appuser:appuser /app
+USER appuser
+
+ENTRYPOINT ["dotnet", "TableOrder.Backend.dll"]

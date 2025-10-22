@@ -1,0 +1,113 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tableorder-config
+  namespace: default
+data:
+  POSTGRES_DB: "tableorder"
+  POSTGRES_USER: "postgres"
+  JWT_ISSUER: "TableOrder.Backend"
+  JWT_AUDIENCE: "TableOrder.Clients"
+  JWT_EXPIRATION_MINUTES: "60"
+  ADMIN_USERNAME: "admin"
+  STAFF_USERNAME: "staff"
+  ASPNETCORE_ENVIRONMENT: "Production"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: tableorder-secrets
+  namespace: default
+type: Opaque
+data:
+  # Base64 encoded values - replace with your actual values
+  POSTGRES_PASSWORD: cG9zdGdyZXNfcGFzc3dvcmQ=  # postgres_password
+  JWT_SECRET_KEY: eW91cl9qd3Rfc2VjcmV0X2tleQ==  # your_jwt_secret_key
+  ADMIN_KEY: YWRtaW5fa2V5  # admin_key
+  ADMIN_PASSWORD: YWRtaW5fcGFzc3dvcmQ=  # admin_password
+  STAFF_PASSWORD: c3RhZmZfcGFzc3dvcmQ=  # staff_password
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15-alpine
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              name: tableorder-config
+              key: POSTGRES_DB
+        - name: POSTGRES_USER
+          valueFrom:
+            configMapKeyRef:
+              name: tableorder-config
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: tableorder-secrets
+              key: POSTGRES_PASSWORD
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+        livenessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - postgres
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - postgres
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: postgres-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+  namespace: default
+spec:
+  selector:
+    app: postgres
+  ports:
+  - port: 5432
+    targetPort: 5432
+  type: ClusterIP

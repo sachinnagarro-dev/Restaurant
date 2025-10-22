@@ -1,0 +1,127 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: tableorder-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-tableorder}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - tableorder-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Backend API
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: tableorder-backend
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: Host=postgres;Database=${POSTGRES_DB:-tableorder};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD}
+      Jwt__SecretKey: ${JWT_SECRET_KEY}
+      Jwt__Issuer: ${JWT_ISSUER:-TableOrder.Backend}
+      Jwt__Audience: ${JWT_AUDIENCE:-TableOrder.Clients}
+      Jwt__ExpirationMinutes: ${JWT_EXPIRATION_MINUTES:-60}
+      Auth__AdminKey: ${ADMIN_KEY}
+      Auth__Admin__Username: ${ADMIN_USERNAME:-admin}
+      Auth__Admin__Password: ${ADMIN_PASSWORD}
+      Auth__Staff__Username: ${STAFF_USERNAME:-staff}
+      Auth__Staff__Password: ${STAFF_PASSWORD}
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - tableorder-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Admin Frontend
+  admin-ui:
+    build:
+      context: ../frontend/admin
+      dockerfile: Dockerfile.prod
+    container_name: tableorder-admin-ui
+    ports:
+      - "3002:80"
+    networks:
+      - tableorder-network
+    restart: unless-stopped
+    depends_on:
+      - backend
+
+  # Kitchen Frontend
+  kitchen-ui:
+    build:
+      context: ../frontend/kitchen
+      dockerfile: Dockerfile.prod
+    container_name: tableorder-kitchen-ui
+    ports:
+      - "3001:80"
+    networks:
+      - tableorder-network
+    restart: unless-stopped
+    depends_on:
+      - backend
+
+  # Tablet Frontend
+  tablet-ui:
+    build:
+      context: ../frontend/tablet
+      dockerfile: Dockerfile.prod
+    container_name: tableorder-tablet-ui
+    ports:
+      - "3000:80"
+    networks:
+      - tableorder-network
+    restart: unless-stopped
+    depends_on:
+      - backend
+
+  # Redis (for caching and session storage)
+  redis:
+    image: redis:7-alpine
+    container_name: tableorder-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - tableorder-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  tableorder-network:
+    driver: bridge
